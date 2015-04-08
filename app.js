@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-var expressHbs = require('express3-handlebars');
+var expressHbs = require('express-handlebars');
 
 var app = express();
 
@@ -25,6 +25,42 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+//Creating db connections
+
+
+app.use(function (req, res, next) {
+	var mongoose = require('mongoose');
+
+	var dbUrl = 'mongodb://@127.0.0.1:27017/test';
+
+	/*
+	var db = mongoose.createConnection(dbUrl);
+	db.on('error', console.error.bind(console,
+	  'connection error:'));
+
+	db.once('open', function (callback) {
+		  console.log("DB open");
+		  db.model = require('./model/model.js');
+		  req.db = db;
+		  next();
+	});
+	*/
+	
+	var MongoClient = require('mongodb').MongoClient;
+
+	// Connect to the db
+	MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
+		 if(err) { return console.dir(err); console.log("Testing 1");}
+		 req.db = db;
+		 next();
+	});
+	
+});
+
+
+
 
 app.use('/', routes);
 app.use('/simple', routes);
