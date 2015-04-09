@@ -31,31 +31,28 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use(function (req, res, next) {
-	var mongoose = require('mongoose');
+	var db = req.app.get('db');
+	console.log(db);
+	if(db == null){
+		console.log("Not connected to DB, creating a connection now");
+		var dbUrl = 'mongodb://@127.0.0.1:27017/test';
+		
+		var MongoClient = require('mongodb').MongoClient;
 
-	var dbUrl = 'mongodb://@127.0.0.1:27017/test';
-
-	/*
-	var db = mongoose.createConnection(dbUrl);
-	db.on('error', console.error.bind(console,
-	  'connection error:'));
-
-	db.once('open', function (callback) {
-		  console.log("DB open");
-		  db.model = require('./model/model.js');
-		  req.db = db;
-		  next();
-	});
-	*/
+		// Connect to the db
+		MongoClient.connect(dbUrl, function(err, db) {
+			 if(err) {console.log("Error: DB Connection");}
+			 req.app.set('db',db);
+			 req.db = db;
+			 next();
+		});
 	
-	var MongoClient = require('mongodb').MongoClient;
-
-	// Connect to the db
-	MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
-		 if(err) { return console.dir(err); console.log("Testing 1");}
-		 req.db = db;
-		 next();
-	});
+		
+	}else{
+		console.log("Already connceted to DB, reuse");
+		req.db = db;
+		next();
+	}
 	
 });
 
