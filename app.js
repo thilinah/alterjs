@@ -4,8 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var rconsole = require('winston');
 
+var config = require('./config');
 var routes = require('./routes/index');
+var mongodb = require('./routes/mongodb');
 var users = require('./routes/users');
 
 var expressHbs = require('express-handlebars');
@@ -15,8 +18,6 @@ var app = express();
 // view engine setup
 app.engine('hbs', expressHbs({extname:'hbs', defaultLayout:'main.hbs'}));
 app.set('view engine', 'hbs');
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -27,14 +28,28 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-//Creating db connections
+//Set logging
+
+var log = new (winston.Logger)({
+	transports: 
+		[
+		 	new (winston.transports.Console)(),
+		 	new (winston.transports.File)({ filename: config.log })
+	    ]
+});
+
+log.level = config.logLevel;
+
+app.set('log',log);
 
 
 app.use(function (req, res, next) {
 	var db = req.app.get('db');
-	console.log(db);
+	var log = req.app.get('log');
+	
+	log.log('info',db);
 	if(db == null){
-		console.log("Not connected to DB, creating a connection now");
+		log.log('info',"Not connected to DB, creating a connection now");
 		var dbUrl = 'mongodb://@127.0.0.1:27017/test';
 		
 		var MongoClient = require('mongodb').MongoClient;
@@ -49,7 +64,7 @@ app.use(function (req, res, next) {
 	
 		
 	}else{
-		console.log("Already connceted to DB, reuse");
+		log.log('info',"Already connceted to DB, reuse");
 		req.db = db;
 		next();
 	}
