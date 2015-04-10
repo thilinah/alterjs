@@ -8,17 +8,17 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="{{baseUrl}}bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="{{baseUrl}}bootstrap/css/bootstrap.css?v={{version}}" rel="stylesheet">
 	
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
-    <script src="{{baseUrl}}bootstrap/js/bootstrap.js"></script>
-	<script src="{{baseUrl}}js/jquery.placeholder.js"></script>
-	<script src="{{baseUrl}}js/jquery.dataTables.js"></script>
-	<script src="{{baseUrl}}js/bootstrap-datepicker.js"></script>
-    <link href="{{baseUrl}}bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="{{baseUrl}}css/DT_bootstrap.css?v=0.4" rel="stylesheet">
-    <link href="{{baseUrl}}css/datepicker.css" rel="stylesheet">
-    <link href="{{baseUrl}}css/style.css?v=<?=$cssVersion?>" rel="stylesheet">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js?v={{version}}"></script>
+    <script src="{{baseUrl}}bootstrap/js/bootstrap.js?v={{version}}"></script>
+	<script src="{{baseUrl}}js/jquery.placeholder.js?v={{version}}"></script>
+	<script src="{{baseUrl}}js/jquery.dataTables.js?v={{version}}"></script>
+	<script src="{{baseUrl}}js/bootstrap-datepicker.js?v={{version}}"></script>
+    <link href="{{baseUrl}}bootstrap/css/bootstrap-responsive.css?v={{version}}" rel="stylesheet">
+    <link href="{{baseUrl}}css/DT_bootstrap.css?v={{version}}" rel="stylesheet">
+    <link href="{{baseUrl}}css/datepicker.css?v={{version}}" rel="stylesheet">
+    <link href="{{baseUrl}}css/style.css?v={{version}}" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -73,7 +73,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', '<?=BaseService::getInstance()->getGAKey()?>', 'gamonoid.com');
+  ga('create', '{{gakey}}', 'gamonoid.com');
   ga('send', 'pageview');
 
   </script>
@@ -148,13 +148,32 @@
 	$("#loginForm").submit();  
   }
   
+  function prepareForms(){
+	  if("{{changePassword}}" != ""){
+			$("#loginForm").remove(); 
+			$("#requestPasswordChangeForm").remove();
+			$("#newPasswordForm").show();
+	  }else{
+		  $("#newPasswordForm").remove();	  
+	  }
+	  
+	  $("loginFailMesage").html("{{loginFailedMessage}}");
+	  
+	  if("{{loginFailed}}" != ""){
+		$("#loginFailedDiv").show();  
+	  }
+	  
+	  if("{{changeSuccess}}" != ""){
+		$("#successMesage").show();  
+	  }
+  }
+  
   </script>
 	<div class="container">
 		<div class="content" style="margin-top:100px;">
 			<div class="row">
 				<div class="login-form">
-					<h2><img src="<?=$logoFileUrl?>"/></h2>
-					<?php if(!isset($_REQUEST['cp'])){?>
+					<h2><img src="{{logoFileUrl}}"/></h2>
 					<form id="loginForm" action="login.php" method="POST">
 						<fieldset>
 							<div class="clearfix">
@@ -169,25 +188,18 @@
 								  	<input class="span2" type="password" id="password" name="password" placeholder="Password">
 								</div>
 							</div>
-							<?php if(isset($_REQUEST['f'])){?>
-							<div class="clearfix alert alert-error" style="font-size:11px;width:147px;margin-bottom: 5px;">
-								Login failed
-								<?php if(isset($_REQUEST['fm'])){
-									echo $_REQUEST['fm'];	
-								}?>
+							<div id="loginFailedDiv" class="clearfix alert alert-error" style="font-size:11px;width:147px;margin-bottom: 5px;display:none;">
+								Login failed <span id="loginFailMesage"></span>
 							</div>
-							<?php } ?>
-							<?php if(isset($_REQUEST['c'])){?>
-							<div class="clearfix alert alert-info" style="font-size:11px;width:147px;margin-bottom: 5px;">
+							<div id="successMesage" class="clearfix alert alert-info" style="font-size:11px;width:147px;margin-bottom: 5px;display:none;">
 								Password changed successfully	
 							</div>
-							<?php } ?>
 							<button class="btn" style="margin-top: 5px;" type="button" onclick="submitLogin();return false;">Sign in&nbsp;&nbsp;<span class="icon-arrow-right"></span></button>
 						</fieldset>
 						<div class="clearfix">
 							<a href="" onclick="showForgotPassword();return false;" style="float:left;margin-top: 10px;">Forgot password</a>
-							<a href="<?=TWITTER_URL?>" target="_blank" style="float:right;"><img src="{{baseUrl}}images/32x32-Circle-53-TW.png"/></a>
-							<a href="<?=FB_URL?>" target="_blank" style="float:right;margin-right: 7px;"><img src="{{baseUrl}}images/32x32-Circle-54-FB.png"/></a>
+							<a href="{{twitterUrl}}" target="_blank" style="float:right;"><img src="{{baseUrl}}images/32x32-Circle-53-TW.png"/></a>
+							<a href="{{facebookUrl}}" target="_blank" style="float:right;margin-right: 7px;"><img src="{{baseUrl}}images/32x32-Circle-54-FB.png"/></a>
 						</div>
 					</form>
 					<form id="requestPasswordChangeForm" style="display:none;" action="">
@@ -204,8 +216,7 @@
 							<button class="btn" style="margin-top: 5px;" type="button" onclick="requestPasswordChange();return false;">Request Password Change&nbsp;&nbsp;<span class="icon-arrow-right"></span></button>
 						</fieldset>
 					</form>
-					<?php }else{?>
-					<form id="newPasswordForm" action="">
+					<form id="newPasswordForm" action="" style="display:none;">
 						<fieldset>
 							<div class="clearfix">
 								<div class="input-prepend">
@@ -219,7 +230,6 @@
 							<button class="btn" style="margin-top: 5px;" type="button" onclick="changePassword();return false;">Change Password&nbsp;&nbsp;<span class="icon-arrow-right"></span></button>
 						</fieldset>
 					</form>
-					<?php }?>
 				</div>
 			</div>
 		</div>
