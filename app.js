@@ -4,12 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var rconsole = require('winston');
+var winston = require('winston');
 
 var config = require('./config');
-var routes = require('./routes/index');
-var mongodb = require('./routes/mongodb');
-var users = require('./routes/users');
+
+var routeIndex = require('./routes/index');
+var routeLogin = require('./routes/login');
 
 var expressHbs = require('express-handlebars');
 
@@ -26,7 +26,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 //Set logging
 
@@ -72,11 +71,8 @@ app.use(function (req, res, next) {
 });
 
 
-
-
-app.use('/', routes);
-app.use('/simple', routes);
-app.use('/users', users);
+app.use('/', routeIndex);
+app.use('/login', routeLogin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
