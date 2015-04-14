@@ -5,22 +5,37 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var winston = require('winston');
+var session = require('express-session');
 
 var config = require('./config');
 
+var crockford = require('./lib/crockford');
+var crockford = require('./lib/globalutils');
+
 var routeIndex = require('./routes/index');
 var routeLogin = require('./routes/login');
+var routeSimple = require('./routes/simple');
 
 var expressHbs = require('express-handlebars');
 
 var app = express();
 
+//initialize session
+app.use(session(
+		{ 
+			secret: 'ice-framework', 
+			cookie: { maxAge: 60000 },
+			resave: true,
+		    saveUninitialized: true
+		}
+		));
+
 // view engine setup
 app.engine('hbs', expressHbs({extname:'hbs', defaultLayout:'main.hbs'}));
 app.set('view engine', 'hbs');
 
-// uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -73,6 +88,17 @@ app.use(function (req, res, next) {
 
 app.use('/', routeIndex);
 app.use('/login', routeLogin);
+app.use('/action', routeSimple);
+
+//Adding routes for action handlers
+//Make sure this is global
+actions = {};
+
+ServiceActionHandlerFacade = require('./api/ServiceActionHandler');
+actions['service'] = new ServiceActionHandlerFacade('service');
+actions['service'].configureHandlers();
+actions['service'].registerRoutes(app);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

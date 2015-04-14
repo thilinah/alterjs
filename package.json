@@ -17,6 +17,7 @@
     "mongodb": "~2.0.25",
     "mongoose": "~4.0.1",
     "winston": "~1.0.0",
-    "bson":"0.3.1"
+    "bson":"0.3.1",
+    "express-session":"1.11.1"
   }
 }

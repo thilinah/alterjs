@@ -1,9 +1,6 @@
-var crockford = require('../lib/crockford');
 var ui = {};
 
 function AbstractUIManager() {
-	this.appName = "";
-	this.baseUrl = "";
 };
 
 AbstractUIManager.method('initialize' , function(config) {
@@ -29,12 +26,52 @@ AbstractUIManager.method('getUIParams' , function() {
 	return params;
 });
 
+AbstractUIManager.method('getRequestParams' , function() {
+	var params = {};
+	return params;
+});
+
 function LoginUIManager() {
 	
 };
 
 LoginUIManager.inherits(AbstractUIManager);
 
+LoginUIManager.method('getRequestParams' , function(req) {
+	var params = {};
+	//set request params
+	if(req.query.key != null && req.query.key != undefined){
+		params.key = req.query.key;
+	}else{
+		params.key = "";
+	}
+	
+	if(req.query.cp != null && req.query.cp != undefined){
+		params.changePassword = req.query.cp;
+	}else{
+		params.changePassword = "";
+	}
+	
+	if(req.query.f != null && req.query.f != undefined){
+		params.loginFailed = req.query.f;
+	}else{
+		params.loginFailed = "";
+	}
+	
+	if(req.query.fm != null && req.query.fm != undefined){
+		params.loginFailedMessage = req.query.fm;
+	}else{
+		params.loginFailedMessage = "";
+	}
+	
+	if(req.query.c != null && req.query.c != undefined){
+		params.changeSuccess = req.query.c;
+	}else{
+		params.changeSuccess = "";
+	}
+	
+	return params;
+});
 
 ui.LoginUIManager = LoginUIManager;
 
