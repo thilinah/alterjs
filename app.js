@@ -6,10 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var winston = require('winston');
 var session = require('express-session');
+var crockford = require('node-crockford-inheritance');
 
 var config = require('./config');
 
-var crockford = require('./lib/crockford');
+
 var crockford = require('./lib/globalutils');
 
 var routeIndex = require('./routes/index');
@@ -22,13 +23,13 @@ var app = express();
 
 //initialize session
 app.use(session(
-		{ 
-			secret: 'ice-framework', 
-			cookie: { maxAge: 60000 },
-			resave: true,
-		    saveUninitialized: true
-		}
-		));
+	{ 
+		secret: 'ice-framework', 
+		cookie: { maxAge: 60000 },
+		resave: true,
+	    saveUninitialized: true
+	}
+));
 
 // view engine setup
 app.engine('hbs', expressHbs({extname:'hbs', defaultLayout:'main.hbs'}));

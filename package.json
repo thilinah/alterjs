@@ -18,6 +18,7 @@
     "mongoose": "~4.0.1",
     "winston": "~1.0.0",
     "bson":"0.3.1",
-    "express-session":"1.11.1"
+    "express-session":"1.11.1",
+    "node-crockford-inheritance":"~0.1.0"
   }
 }
